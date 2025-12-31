@@ -1,0 +1,61 @@
+// Prisma Schema for Full-Stack Todo Application (Phase 2)
+// Database: Neon Serverless PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - Handles authentication and user data
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  name      String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  tasks Task[]
+
+  @@map("users")
+}
+
+// Task model - Core todo task entity
+model Task {
+  id                     String    @id @default(uuid()) @db.Uuid
+  userId                 String    @map("user_id") @db.Uuid
+  title                  String    @db.VarChar(200)
+  description            String?   @db.Text
+  completed              Boolean   @default(false)
+  priority               Priority  @default(medium)
+  tags                   String[]  @default([])
+  category               String?   @db.VarChar(100)
+  dueDate                DateTime? @map("due_date") @db.Timestamptz
+  recurrencePattern      String?   @map("recurrence_pattern") @db.VarChar(50)
+  reminderEnabled        Boolean   @default(false) @map("reminder_enabled")
+  reminderOffsetMinutes  Int?      @map("reminder_offset_minutes")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes for performance
+  @@index([userId], name: "idx_tasks_user_id")
+  @@index([dueDate], name: "idx_tasks_due_date")
+  @@index([completed], name: "idx_tasks_completed")
+  @@index([userId, priority], name: "idx_tasks_user_priority")
+  @@map("tasks")
+}
+
+// Priority enum - Task priority levels
+enum Priority {
+  low
+  medium
+  high
+}
