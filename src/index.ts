@@ -17,6 +17,7 @@ const CORS_ORIGIN = process.env['CORS_ORIGIN'] || 'http://localhost:5173';
 app.use(
   cors({
     origin: CORS_ORIGIN,
+    
     credentials: true, // Allow cookies for session-based auth
   })
 );
