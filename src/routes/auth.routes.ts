@@ -52,7 +52,7 @@ router.post('/signup', validate(signupSchema), async (req: Request, res: Respons
     res.cookie('todo_session', sessionId, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      sameSite: process.env['NODE_ENV'] === 'production' ? 'none' : 'lax', // 'none' required for cross-origin in production
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
@@ -94,7 +94,7 @@ router.post('/signin', validate(signinSchema), async (req: Request, res: Respons
     res.cookie('todo_session', sessionId, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      sameSite: process.env['NODE_ENV'] === 'production' ? 'none' : 'lax', // 'none' required for cross-origin in production
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
@@ -117,8 +117,12 @@ router.post('/signout', (req: Request, res: Response) => {
       // Remove session
       sessions.delete(sessionId);
 
-      // Clear session cookie
-      res.clearCookie('todo_session');
+      // Clear session cookie (must match cookie settings used when setting it)
+      res.clearCookie('todo_session', {
+        httpOnly: true,
+        secure: process.env['NODE_ENV'] === 'production',
+        sameSite: process.env['NODE_ENV'] === 'production' ? 'none' : 'lax',
+      });
     }
 
     res.status(200).json(successResponse({ message: 'Signed out successfully' }));
