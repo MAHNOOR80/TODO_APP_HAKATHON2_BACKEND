@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // Uses the POOLED connection (pgbouncer)
+  directUrl = env("DIRECT_URL")   // Uses the DIRECT connection (required for migrations)
 }
 
 // User model - Handles authentication and user data
