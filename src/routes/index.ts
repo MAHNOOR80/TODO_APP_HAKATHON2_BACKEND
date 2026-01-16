@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
 import tasksRoutes from './tasks.routes';
+import aiRoutes from './ai.routes';
 
 /**
  * API Route Aggregation
@@ -24,5 +25,6 @@ router.get('/health', (_req, res) => {
 // Register route modules
 router.use('/auth', authRoutes);
 router.use('/tasks', tasksRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

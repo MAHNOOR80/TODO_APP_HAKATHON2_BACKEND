@@ -5,6 +5,7 @@ import { signupSchema, signinSchema } from '../validators/auth.validator';
 import { successResponse, errorResponse } from '../utils/response.utils';
 import { toUserResponse } from '../models/user.model';
 import * as userRepository from '../repositories/user.repository';
+import { randomUUID } from 'crypto';
 
 /**
  * Authentication Routes
@@ -45,7 +46,7 @@ router.post('/signup', validate(signupSchema), async (req: Request, res: Respons
     const user = await userRepository.createUser(email, hashedPassword, name);
 
     // Create session
-    const sessionId = crypto.randomUUID();
+    const sessionId = randomUUID();
     sessions.set(sessionId, { userId: user.id, email: user.email });
 
     // Set session cookie
@@ -87,7 +88,7 @@ router.post('/signin', validate(signinSchema), async (req: Request, res: Respons
     }
 
     // Create session
-    const sessionId = crypto.randomUUID();
+    const sessionId = randomUUID();
     sessions.set(sessionId, { userId: user.id, email: user.email });
 
     // Set session cookie
